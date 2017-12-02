@@ -150,7 +150,7 @@ namespace NMS
             string line;
             string[] integerStrings;
 
-            StreamReader file = new StreamReader("C:\\Users\\Patryk-student ELKI\\Desktop\\AWARIA\\tsst_nms\\NMS\\NMS\\bin\\Debug\\" + inCommand.agentId + ".txt");
+            StreamReader file = new StreamReader("C:\\Users\\Maciek\\Desktop\\tsst projekt1\\TSST\\tsst_nms\\NMS\\NMS\\bin\\Debug\\" + inCommand.agentId + ".txt");
             while ((line = file.ReadLine()) != null)
             {
                 integerStrings = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);

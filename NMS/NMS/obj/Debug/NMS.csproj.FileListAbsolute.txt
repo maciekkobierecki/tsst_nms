@@ -18,3 +18,12 @@ C:\Users\Patryk-student ELKI\Desktop\AWARIA\tsst_nms\NMS\NMS\obj\Debug\NMS.cspro
 C:\Users\Patryk-student ELKI\Desktop\AWARIA\tsst_nms\NMS\NMS\obj\Debug\NMS.csproj.CoreCompileInputs.cache
 C:\Users\Patryk-student ELKI\Desktop\AWARIA\tsst_nms\NMS\NMS\obj\Debug\NMS.exe
 C:\Users\Patryk-student ELKI\Desktop\AWARIA\tsst_nms\NMS\NMS\obj\Debug\NMS.pdb
+C:\Users\Maciek\Desktop\tsst projekt1\TSST\tsst_nms\NMS\NMS\bin\Debug\NMS.exe.config
+C:\Users\Maciek\Desktop\tsst projekt1\TSST\tsst_nms\NMS\NMS\obj\Debug\NMS.exe
+C:\Users\Maciek\Desktop\tsst projekt1\TSST\tsst_nms\NMS\NMS\obj\Debug\NMS.pdb
+C:\Users\Maciek\Desktop\tsst projekt1\TSST\tsst_nms\NMS\NMS\bin\Debug\NMS.exe
+C:\Users\Maciek\Desktop\tsst projekt1\TSST\tsst_nms\NMS\NMS\bin\Debug\NMS.pdb
+C:\Users\Maciek\Desktop\tsst projekt1\TSST\tsst_nms\NMS\NMS\obj\Debug\NMS.csprojResolveAssemblyReference.cache
+C:\Users\Maciek\Desktop\tsst projekt1\TSST\tsst_nms\NMS\NMS\obj\Debug\NMS.Form1.resources
+C:\Users\Maciek\Desktop\tsst projekt1\TSST\tsst_nms\NMS\NMS\obj\Debug\NMS.Properties.Resources.resources
+C:\Users\Maciek\Desktop\tsst projekt1\TSST\tsst_nms\NMS\NMS\obj\Debug\NMS.csproj.GenerateResource.Cache
