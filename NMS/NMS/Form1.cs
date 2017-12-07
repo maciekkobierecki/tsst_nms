@@ -21,7 +21,7 @@ namespace NMS
         private Socket inputSocket = null;
         public Command inCommand = new Command();
         public Command outCommand = new Command();
-        private int outputPort;
+        ConnectionManager connectionManager;
 
         public Form1()
         {
@@ -30,39 +30,39 @@ namespace NMS
             inputSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             IPAddress ipAdd = IPAddress.Parse("127.0.0.1");
             IPEndPoint remoteEP = new IPEndPoint(ipAdd, 7386);
+            connectionManager = new ConnectionManager();
             inputSocket.Bind(remoteEP);
             if (!backgroundWorker1.IsBusy)
             {
                 backgroundWorker1.RunWorkerAsync();
             }
+            
         }
 
         private void update_b_Click(object sender, EventArgs e)
         {
+            String destination;
             outCommand.agentId = "Add";
-            outCommand.agentPort = (int)(comboBox1.SelectedItem);
             outCommand.inPort = Int32.Parse(textBox_ip.Text);
             outCommand.inLabel = Int32.Parse(textBox_il.Text);
             outCommand.outPort = Int32.Parse(textBox_op.Text);
             outCommand.outLabel = Int32.Parse(textBox_ol.Text);
-            outputPort= (int)(comboBox1.SelectedItem);
-            SendSingleCommand(outCommand);
+            destination= (String)comboBox1.SelectedItem;
+            SendSingleCommand(outCommand, destination);
         }
         private void delete_b_Click(object sender, EventArgs e)
         {
+            String destination;
             outCommand.agentId = "Delete";
-            outCommand.agentPort = (int)(comboBox1.SelectedItem);
             outCommand.inPort = Int32.Parse(textBox_ip.Text);
             outCommand.inLabel = Int32.Parse(textBox_il.Text);
             outCommand.outPort = Int32.Parse(textBox_op.Text);
             outCommand.outLabel = Int32.Parse(textBox_ol.Text);
-            outputPort = (int)(comboBox1.SelectedItem);
-            SendSingleCommand(outCommand);
+            destination = (String)(comboBox1.SelectedItem);
+            SendSingleCommand(outCommand, destination);
         }
 
-        /// <summary>
-        /// //////////////////////////////////////////////////
-        /// </summary>
+    
         public void Listen()
         {
             
@@ -72,6 +72,7 @@ namespace NMS
             {
                 foreignSocket = inputSocket.Accept();
                 Thread thread = new Thread(() => process(foreignSocket));
+                thread.IsBackground = true;
                 thread.Start();
             }
 
@@ -79,6 +80,7 @@ namespace NMS
 
         private void process(Socket foreignSocket)
         {
+            int outputPort;
             try
             {
                 while (true)
@@ -90,10 +92,15 @@ namespace NMS
 
                     if (inCommand.agentId != "KeepAlive")
                     {
-                        outputPort = inCommand.agentPort;
+                        outputPort = inCommand.agentPort; // po co to?
+                        String agentId = inCommand.agentId;
+                        Connect(outputPort);
+                        connectionManager.Add(agentId, output_socket);
                         comboBox1.Invoke(new Action(delegate ()
                         {
-                            comboBox1.Items.Add(inCommand.agentPort);
+                            Boolean doesExist = doesExistInBox(agentId);
+                            if(!doesExist)
+                                comboBox1.Items.Add(agentId);
                         }));
 
                         listBox2.Invoke(new Action(delegate ()
@@ -104,7 +111,7 @@ namespace NMS
 
                         if (inCommand.agentId != null)
                         {
-                            ParseConfig();
+                            ParseConfig(agentId);
                         }
                     }
                     else
@@ -125,10 +132,22 @@ namespace NMS
 
         }
 
-        private void SendSingleCommand(Command cm)
+        private Boolean doesExistInBox(String agentId)
         {
-            Connect();
-            output_socket.Send(GetSerializedCommand(cm));
+            String id = null;  
+            for(int i=0; i<comboBox1.Items.Count; i++)
+            {
+                id = comboBox1.GetItemText(comboBox1.Items[i]);
+                if (id.Equals(agentId))
+                    return true;
+            }
+            return false;
+        }
+
+        private void SendSingleCommand(Command cm, String destinationName)
+        {
+            byte[] serialized = GetSerializedCommand(cm);
+            connectionManager.SendToAgent(destinationName, serialized);
             listBox1.Invoke(new Action(delegate ()
             {
                 listBox1.Items.Add(cm.inPort + " " + cm.inLabel + " " + cm.outPort + " " + cm.outLabel + " " + outCommand.newLabel + " " + outCommand.removeLabel + " " + outCommand.ipAdress);
@@ -136,7 +155,7 @@ namespace NMS
             }));
         }
 
-        private void Connect()
+        private void Connect(int outputPort)
         {
             output_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             IPAddress ipAdd = IPAddress.Parse("127.0.0.1");
@@ -145,7 +164,7 @@ namespace NMS
         }
 
 
-        private void ParseConfig()
+        private void ParseConfig(String destinationNode)
         {
             string line;
             string[] integerStrings;
@@ -163,7 +182,7 @@ namespace NMS
                 outCommand.newLabel = Int32.Parse(integerStrings[4]);
                 outCommand.removeLabel = Int32.Parse(integerStrings[5]);
                 outCommand.ipAdress = integerStrings[6];
-                SendSingleCommand(outCommand);
+                SendSingleCommand(outCommand, destinationNode);
             }
 
         }
