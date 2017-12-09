@@ -47,6 +47,9 @@ namespace NMS
             outCommand.inLabel = Int32.Parse(textBox_il.Text);
             outCommand.outPort = Int32.Parse(textBox_op.Text);
             outCommand.outLabel = Int32.Parse(textBox_ol.Text);
+            outCommand.newLabel = Int32.Parse(textBox_nl.Text);
+            outCommand.removeLabel = Int32.Parse(textBox_rl.Text);
+            outCommand.ipAdress = textBox_d.Text;
             destination= (String)comboBox1.SelectedItem;
             SendSingleCommand(outCommand, destination);
         }
@@ -58,6 +61,9 @@ namespace NMS
             outCommand.inLabel = Int32.Parse(textBox_il.Text);
             outCommand.outPort = Int32.Parse(textBox_op.Text);
             outCommand.outLabel = Int32.Parse(textBox_ol.Text);
+            outCommand.newLabel = Int32.Parse(textBox_nl.Text);
+            outCommand.removeLabel = Int32.Parse(textBox_rl.Text);
+            outCommand.ipAdress = textBox_d.Text;
             destination = (String)(comboBox1.SelectedItem);
             SendSingleCommand(outCommand, destination);
         }
@@ -85,9 +91,7 @@ namespace NMS
             {
                 while (true)
                 {
-                    int readByte;
-                    byte[] bytes = new byte[foreignSocket.SendBufferSize];
-                    readByte = foreignSocket.Receive(bytes);
+                    byte[] bytes = Receive(foreignSocket);
                     inCommand = GetDeserializedCommand(bytes);
 
                     if (inCommand.agentId != "KeepAlive")
@@ -105,7 +109,7 @@ namespace NMS
 
                         listBox2.Invoke(new Action(delegate ()
                         {
-                            listBox2.Items.Add(inCommand.agentId + " " + inCommand.agentPort);
+                            listBox2.Items.Add("Connected with: "+inCommand.agentId);
                             listBox2.SelectedIndex = listBox2.Items.Count - 1;
                         }));
 
@@ -132,6 +136,21 @@ namespace NMS
 
         }
 
+        private byte[] Receive(Socket inputSocket)
+        {
+            byte[] messageSize = new byte[4];
+            inputSocket.Receive(messageSize, 0, 4, SocketFlags.None);
+            int inputSize = BitConverter.ToInt32(messageSize, 0);
+            byte[] bytes = new byte[inputSize];
+            int totalReceived = 0;
+            do
+            {
+                int received = inputSocket.Receive(bytes, totalReceived, inputSize - totalReceived, SocketFlags.Partial);
+                totalReceived += received;
+            } while (totalReceived != inputSize);
+            return bytes;
+        }
+
         private Boolean doesExistInBox(String agentId)
         {
             String id = null;  
@@ -150,7 +169,7 @@ namespace NMS
             connectionManager.SendToAgent(destinationName, serialized);
             listBox1.Invoke(new Action(delegate ()
             {
-                listBox1.Items.Add(cm.inPort + " " + cm.inLabel + " " + cm.outPort + " " + cm.outLabel + " " + outCommand.newLabel + " " + outCommand.removeLabel + " " + outCommand.ipAdress);
+                listBox1.Items.Add("Sent to:" + destinationName+" record: "+ cm.inPort + " " + cm.inLabel + " " + cm.outPort + " " + cm.outLabel + " " + outCommand.newLabel + " " + outCommand.removeLabel + " " + outCommand.ipAdress);
                 listBox1.SelectedIndex = listBox1.Items.Count - 1;
             }));
         }
@@ -169,7 +188,7 @@ namespace NMS
             string line;
             string[] integerStrings;
 
-            StreamReader file = new StreamReader("C:\\Users\\Maciek\\Desktop\\tsst projekt1\\TSST\\tsst_nms\\NMS\\NMS\\bin\\Debug\\" + inCommand.agentId + ".txt");
+            StreamReader file = new StreamReader("C:\\Users\\73773\\Desktop\\projekty\\tsst_nms\\NMS\\NMS\\bin\\Debug\\" + inCommand.agentId + ".txt");
             while ((line = file.ReadLine()) != null)
             {
                 integerStrings = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);

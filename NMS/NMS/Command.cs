@@ -19,7 +19,7 @@ namespace NMS
         public int removeLabel;
         public string ipAdress;
 
-        public Command(string ai, int ap, int ip, int il, int op, int ol, int nl, int rl, string ipa)
+        public Command(string ai, int ap, int ip, int il, int op, int ol, int nl, int rl,string ipa)
         {
             agentId = ai;
             agentPort = ap;
